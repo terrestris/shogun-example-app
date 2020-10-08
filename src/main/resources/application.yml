@@ -1,0 +1,48 @@
+spring:
+  profiles:
+    include: base
+    active: base, boot
+
+---
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  profiles: boot
+  datasource:
+    url: jdbc:postgresql://localhost:5555/shogun?currentSchema=shogun
+  flyway:
+    schemas: shogun, public
+    defaultSchema: shogun
+  messages:
+    basename: org/springframework/security/messages, de/terrestris/shogun/lib/messages
+  mail:
+    host: mail.terrestris.de
+    port: 587
+    protocol: smtp
+    username: noreply
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 8000
+
+server:
+  port: 8080
+  servlet:
+    context-path: /shogun-example-app
+
+support:
+  email: noreply@terrestris.de
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
