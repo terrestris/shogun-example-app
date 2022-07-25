@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -7,12 +6,57 @@
   <parent>
     <groupId>de.terrestris</groupId>
     <artifactId>shogun</artifactId>
-    <version>5.0.0</version>
+    <version>13.0.0</version>
   </parent>
 
-  <groupId>de.terrestris</groupId>
+  <!-- TODO: Adjust to your project -->
   <artifactId>shogun-example-app</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <!-- TODO: Adjust to your project -->
+  <name>shogun-example-app</name>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <!-- TODO: Adjust to your project -->
+  <scm>
+    <url>https://github.com/terrestris/shogun-example-app</url>
+    <connection>scm:git:git@github.com:terrestris/shogun-example-app.git</connection>
+    <developerConnection>scm:git:git@github.com:terrestris/shogun-example-app.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <properties>
+    <shogun.version>13.0.0</shogun.version>
+
+    <!-- TODO: Adjust to your project -->
+    <image>nexus.terrestris.de/${project.artifactId}:latest</image>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+  <!-- TODO: Adjust to your project -->
+  <distributionManagement>
+    <repository>
+      <id>nexus.terrestris.de</id>
+      <name>Nexus Release Repository</name>
+      <url>https://nexus.terrestris.de/repository/shogun-example-app/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus.terrestris.de-snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>https://nexus.terrestris.de/repository/shogun-example-app/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <repositories>
     <repository>
@@ -21,17 +65,116 @@
     </repository>
   </repositories>
 
-  <name>shogun-example-app</name>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>nexus.terrestris.de</id>
+      <url>https://nexus.terrestris.de/repository/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
-  <properties>
-    <shogun.version>5.0.0</shogun.version>
-  </properties>
+  <modules>
+    <module>example-backend</module>
+  </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>de.terrestris</groupId>
-      <artifactId>shogun-boot</artifactId>
-      <version>${shogun.version}</version>
-    </dependency>
-  </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>de.terrestris</groupId>
+        <artifactId>shogun-boot</artifactId>
+        <version>${shogun.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>com.google.cloud.tools</groupId>
+          <artifactId>jib-maven-plugin</artifactId>
+          <configuration>
+            <to>
+              <!-- TODO: Adjust to your project -->
+              <image>nexus.terrestris.de/${project.artifactId}:latest</image>
+              <tags>
+                <tag>${project.version}</tag>
+                <!--suppress UnresolvedMavenProperty -->
+                <tag>${project.version}-${git.commit.id.abbrev}</tag>
+              </tags>
+            </to>
+            <container>
+              <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+              <ports>
+                <port>8080</port>
+              </ports>
+            </container>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>io.github.zlika</groupId>
+          <artifactId>reproducible-build-maven-plugin</artifactId>
+          <version>${reproducible-build-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>4.9.10</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>revision</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <generateGitPropertiesFile>false</generateGitPropertiesFile>
+            <offline>true</offline>
+            <abbrevLength>6</abbrevLength>
+            <injectIntoSysProperties>true</injectIntoSysProperties>
+            <skipPoms>false</skipPoms>
+            <runOnlyOnce>true</runOnlyOnce>
+            <validationProperties>
+              <validationProperty>
+                <!-- verify that the project version ends with `-SNAPSHOT` -->
+                <name>Validating project version</name>
+                <value>${project.version}</value>
+                <shouldMatchTo><![CDATA[^.*(?<-SNAPSHOT)$]]></shouldMatchTo>
+              </validationProperty>
+            </validationProperties>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.6</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
