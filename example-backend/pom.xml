@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.terrestris</groupId>
+    <!-- TODO: Adjust to your project -->
+    <artifactId>shogun-example-app</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- TODO: Adjust to your project -->
+  <artifactId>example-backend</artifactId>
+  <packaging>jar</packaging>
+
+  <!-- TODO: Adjust to your project -->
+  <name>example-backend</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.terrestris</groupId>
+      <artifactId>shogun-boot</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>build-info</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build-info</goal>
+            </goals>
+          </execution>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <configuration>
+          <container>
+            <!-- TODO: Adjust to your project -->
+            <mainClass>de.terrestris.shogunexample.config.ShogunExampleAppConfig</mainClass>
+            <jvmFlags>
+              <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+              <jvmFlag>-Dspring.profiles.active=base,boot,example-backend</jvmFlag>
+              <jvmFlag>-Xms512m</jvmFlag>
+              <jvmFlag>-Xmx1g</jvmFlag>
+            </jvmFlags>
+          </container>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
