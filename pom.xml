@@ -6,7 +6,7 @@
   <parent>
     <groupId>de.terrestris</groupId>
     <artifactId>shogun</artifactId>
-    <version>18.0.0</version>
+    <version>21.3.0</version>
   </parent>
 
   <!-- TODO: Adjust to your project -->
@@ -34,7 +34,7 @@
   </scm>
 
   <properties>
-    <shogun.version>18.0.0</shogun.version>
+    <shogun.version>21.3.0</shogun.version>
 
     <!-- TODO: Adjust to your project -->
     <image>nexus.terrestris.de/${project.artifactId}:latest</image>
